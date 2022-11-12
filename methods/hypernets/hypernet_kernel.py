@@ -338,7 +338,9 @@ class HyperShot(HyperNetPOC):
                         kld_loss += self.loss_kld(w_mean, w_logvar) + self.loss_kld(b_mean, b_logvar)
                 elif isinstance(m, (BayesLinear2)):
                     if self.use_kld:
-                        kld_loss += self.loss_kld(m.weight_mu, m.weight_log_var) + self.loss_kld(m.bias_mu, m.bias_log_var)
+                        in_features = m.weight_mu.size(dim=1)
+                        out_features = m.weight_mu.size(dim=0)
+                        kld_loss += self.loss_kld(torch.zeros(out_features, in_features), m.weight_log_var) + self.loss_kld(torch.zeros(out_features), m.bias_log_var)
                         total_sigma += torch.sum(torch.abs(torch.exp(0.5*m.bias_log_var)))+torch.sum(torch.abs(torch.exp(0.5*m.weight_log_var)))
             crossentropy_loss += self.loss_fn(y_pred, y_to_classify_gt)
 
