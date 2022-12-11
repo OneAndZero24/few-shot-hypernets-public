@@ -68,7 +68,7 @@ class Linear_fw(nn.Linear): #used in MAML to forward input with fast weight
         return out
 
 class BayesLinear(nn.Module): 
-    def __init__(self, in_features, out_features, bias=True, bayesian=False, epoch_state_dict = {}):
+    def __init__(self, in_features, out_features, bias=True, bayesian=False):
         super(BayesLinear, self).__init__()
 
         self.bayesian = bayesian
@@ -80,8 +80,6 @@ class BayesLinear(nn.Module):
         self.weight_mu = nn.Parameter(torch.Tensor(out_features, in_features))
         self.weight_log_var = nn.Parameter(torch.Tensor(out_features, in_features))
 
-        self.epoch_state_dict = epoch_state_dict
-
         if self.bias:
             self.bias_mu = nn.Parameter(torch.Tensor(out_features))
             self.bias_log_var = nn.Parameter(torch.Tensor(out_features))
@@ -89,31 +87,28 @@ class BayesLinear(nn.Module):
             self.bias_mu = None
             self.bias_log_var = None
 
-    def get_scale(self):
-        if not self.epoch_state_dict["hn_warmup"]:
-            return 1
-
-        if self.epoch_state_dict["cur_epoch"] < self.epoch_state_dict["from_epoch"]:
-            return 0
-            
-        beg = self.epoch_state_dict["from_epoch"]
-        end = self.epoch_state_dict["to_epoch"]
-        cur = self.epoch_state_dict["cur_epoch"]
-
-        return min(1, float(cur-beg) / float(end-beg))
-
     def forward(self, x):
 
-        if self.training and self.bayesian:
+        if type(x) is tuple:
 
-            scale = self.get_scale()
-
-            weight = reparameterize(self.weight_mu, self.weight_log_var)
-            bias = reparameterize(self.bias_mu, self.bias_log_var)
-
-            return F.linear(x, scale*weight + (1-scale)*self.weight_mu, scale*bias + (1-scale)*self.bias_mu)
+            normal_x, bayes_x = x
+            if self.training and self.bayesian:
+                weight = reparameterize(self.weight_mu, self.weight_log_var)
+                bias = reparameterize(self.bias_mu, self.bias_log_var)
+                
+                # normal, bayesian
+                return F.linear(normal_x, self.weight_mu, self.bias_mu), F.linear(bayes_x, weight, bias)
+            else:
+                return F.linear(normal_x, self.weight_mu, self.bias_mu)
         else:
-            return F.linear(x, self.weight_mu, self.bias_mu)
+            if self.training and self.bayesian:
+                weight = reparameterize(self.weight_mu, self.weight_log_var)
+                bias = reparameterize(self.bias_mu, self.bias_log_var)
+                
+                # normal, bayesian
+                return F.linear(x, self.weight_mu, self.bias_mu), F.linear(x, weight, bias)
+            else:
+                return F.linear(x, self.weight_mu, self.bias_mu)
 
 class Conv2d_fw(nn.Conv2d): #used in MAML to forward input with fast weight
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,padding=0, bias = True):

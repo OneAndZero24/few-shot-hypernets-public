@@ -37,6 +37,8 @@ class HyperShot(HyperNetPOC):
         self.use_kld = params.hn_use_kld
         self.hn_use_mu_in_kld = params.hn_use_mu_in_kld
         self.epoch_state_dict = {}
+        self.hn_warmup = params.hn_warmup
+        self.bayesian_model = params.hn_bayesian_model
         ################################################
         ################################################
         ################################################
@@ -109,7 +111,7 @@ class HyperShot(HyperNetPOC):
             is_final = i == (params.hn_tn_depth - 1)
             insize = common_insize if i == 0 else tn_hidden_size
             outsize = self.n_way if is_final else tn_hidden_size
-            layers.append(BayesLinear(insize, outsize, bias=True, bayesian=params.hn_bayesian_model, epoch_state_dict=self.epoch_state_dict))
+            layers.append(BayesLinear(insize, outsize, bias=True, bayesian=params.hn_bayesian_model))
             if not is_final:
                 layers.append(nn.ReLU())
 
@@ -274,8 +276,6 @@ class HyperShot(HyperNetPOC):
     ):
         nw, ne, c, h, w = x.shape
 
-        self.epoch_state_dict["cur_epoch"] = epoch
-
         support_feature, query_feature = self.parse_feature(x, is_feature=False)
 
         # TODO: add/check changes for attention-like input
@@ -329,7 +329,19 @@ class HyperShot(HyperNetPOC):
         total_kld_loss = 0
 
         for _ in range(self.S):
-            y_pred = classifier(relational_feature_to_classify)
+
+            y_pred = None
+            bayes_y_pred = None
+
+            if self.bayesian_model and self.hn_warmup:
+                self.epoch_state_dict["cur_epoch"] = epoch
+                beg = self.epoch_state_dict["from_epoch"]
+                end = self.epoch_state_dict["to_epoch"]
+                warmup_scale = min(1,(epoch-beg) / (end-beg)) if epoch >= beg else 0
+                y_pred, bayes_y_pred = classifier(relational_feature_to_classify)
+                y_pred = (1-warmup_scale) * y_pred + warmup_scale * bayes_y_pred
+            else:
+                y_pred = classifier(relational_feature_to_classify)
 
             crossentropy_loss = 0
             kld_loss = 0      
