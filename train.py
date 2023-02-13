@@ -322,6 +322,7 @@ def get_scheduler(params, optimizer, stop_epoch=None) -> lr_scheduler._LRSchedul
 
 
 if __name__ == '__main__':
+    torch.autograd.detect_anomaly(True)
     params = parse_args('train')
     _set_seed(params.seed)
     if params.dataset == 'cross':
