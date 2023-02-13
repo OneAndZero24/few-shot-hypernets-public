@@ -216,9 +216,6 @@ class HyperNetPOC(MetaTemplate):
 
         classifier = self.generate_target_net(support_feature)
 
-        # get parameters of classifier
-        bayesian_params_dict = self.upload_mu_and_sigma_histogram(classifier, test=True)
-
         final_y_pred = []
 
         for sample in range(self.hn_S_test):
@@ -237,7 +234,7 @@ class HyperNetPOC(MetaTemplate):
                 y_pred_perm = classifier(query_perm)
                 assert torch.equal(y_pred_perm[rev_perm], y_pred)
 
-        return torch.stack(final_y_pred).mean(dim=0), bayesian_params_dict
+        return torch.stack(final_y_pred).mean(dim=0), {}
 
     def set_forward_with_adaptation(self, x: torch.Tensor):
         self_copy = deepcopy(self)
@@ -255,10 +252,8 @@ class HyperNetPOC(MetaTemplate):
                 val_opt.step()
                 self_copy.eval()
                 metrics[f"accuracy/val@-{i}"] = self_copy.query_accuracy(x)
-        y_pred, bayesian_params_dict = self_copy.set_forward(x, permutation_sanity_check=True)
-        print("bayesian params dict")
-        print(bayesian_params_dict)
-        return y_pred, bayesian_params_dict, metrics
+        y_pred, _ = self_copy.set_forward(x, permutation_sanity_check=True)
+        return y_pred, {}, metrics
 
     def query_accuracy(self, x: torch.Tensor) -> float:
         scores, _ = self.set_forward(x)

@@ -188,20 +188,12 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
             stop_epoch - 1
         ]:
             try:
-                acc, test_loop_metrics, bnn_dict = model.test_loop(val_loader, epoch=epoch)
+                acc, test_loop_metrics, _ = model.test_loop(val_loader, epoch=epoch)
             except:
-                acc, bnn_dict = model.test_loop(val_loader, epoch=epoch)
+                acc, _ = model.test_loop(val_loader, epoch=epoch)
                 test_loop_metrics = dict()
             print(
                 f"Epoch {epoch}/{stop_epoch}  | Max test acc {max_acc:.2f} | Test acc {acc:.2f} | Metrics: {test_loop_metrics}")
-
-            if bnn_dict:
-                for key in bnn_dict.keys():
-                    if epoch % 100 == 0:
-                        fig = plt.figure()
-                        plt.hist(bnn_dict[key], edgecolor="black", bins=20)
-                        neptune_run[key + "/train"].upload(File.as_image(fig))
-                        plt.close(fig)
 
             metrics = metrics or dict()
             metrics["lr"] = scheduler.get_lr()
@@ -553,13 +545,5 @@ if __name__ == '__main__':
             test_results, bayesian_dicts = perform_test(params)
             if neptune_run is not None:
                 neptune_run[f"full_test/{d}/metrics @ {hn_val_epochs}"] = test_results
-
-            for bayesian_dict in bayesian_dicts:
-                if bayesian_dict:
-                    for key in bayesian_dict.keys():
-                        fig = plt.figure()
-                        plt.hist(bayesian_dict[key], edgecolor="black", bins=20)
-                        neptune_run[key + f"/test_val_epochs@{hn_val_epochs}_val_dataset@{idx}"].upload(File.as_image(fig))
-                        plt.close(fig)
 
 
