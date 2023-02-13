@@ -387,27 +387,12 @@ class HyperShot(HyperNetPOC):
         sigma_weight = np.concatenate(sigma_weight)
         sigma_bias = np.concatenate(sigma_bias)
 
-        if not test:
-            return {
+        return {
                 "mu_weight": mu_weight,
                 "mu_bias": mu_bias,
                 "sigma_weight": sigma_weight,
                 "sigma_bias": sigma_bias
-            }
-        else:
-            print("TEST DICT")
-            print({
-                "mu_weight_test": mu_weight,
-                "mu_bias_test": mu_bias,
-                "sigma_weight_test": sigma_weight,
-                "sigma_bias_test": sigma_bias
-            })
-            return {
-                "mu_weight_test": mu_weight,
-                "mu_bias_test": mu_bias,
-                "sigma_weight_test": sigma_weight,
-                "sigma_bias_test": sigma_bias
-            }
+        }
 
     # helper function to create dictionary of bayesian parameters in target network (used in experiments)
     def get_mu_and_sigma(self):
