@@ -321,8 +321,7 @@ def get_scheduler(params, optimizer, stop_epoch=None) -> lr_scheduler._LRSchedul
     raise TypeError(params.lr_scheduler)
 
 
-if __name__ == '__main__':
-    torch.autograd.detect_anomaly(True)
+def training():
     params = parse_args('train')
     _set_seed(params.seed)
     if params.dataset == 'cross':
@@ -548,3 +547,6 @@ if __name__ == '__main__':
                 neptune_run[f"full_test/{d}/metrics @ {hn_val_epochs}"] = test_results
 
 
+if __name__ == '__main__':
+    with torch.autograd.set_detect_anomaly(True):
+        training()
