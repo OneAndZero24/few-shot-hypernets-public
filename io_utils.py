@@ -59,7 +59,7 @@ def parse_args(script):
     parser.add_argument('--n_shot'      , default=5, type=int,  help='number of labeled data in each class, same as n_support') #baseline and baseline++ only use this parameter in finetuning
     parser.add_argument('--train_aug'   , action='store_true',  help='perform data augmentation or not during training ') #still required for save_features.py and test.py to find the model path correctly
     parser.add_argument("--checkpoint_suffix", type=str,default="", help="Suffix for custom experiment differentiation" )
-    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
+    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate") # ORIGINAL VALUE WAS 1e-3!!!!!!!!!!! Changed due to problems with miniImagenet(1e-4)
     parser.add_argument("--optim", type=str, choices=["adam", "sgd"], help="Optimizer", default="adam")
     parser.add_argument("--n_val_perms", type=int, default=1, help="Number of task permutations in evaluation.")
     parser.add_argument("--lr_scheduler", type=str, help="LR scheduler", default="none", choices=[
