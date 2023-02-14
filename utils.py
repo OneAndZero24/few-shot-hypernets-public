@@ -35,9 +35,24 @@ def kl_diag_gauss_with_standard_gauss(mean, logvar):
     logvar_flat = torch.cat([t.view(-1) for t in logvar])-1
     var_flat = logvar_flat.exp()
 
-    return -0.5 * torch.sum(1 + logvar_flat - mean_flat.pow(2) - var_flat)
+    result = -0.5 * torch.sum(1 + logvar_flat - mean_flat.pow(2) - var_flat)
+
+    print("MIN dkl")
+    print(torch.min(result))
+    print("MAX dkl")
+    print(torch.max(result))
+
+    return
 
 def reparameterize(mu, logvar):
     std = torch.exp(0.5 * (logvar -1))
     eps = torch.randn_like(std)
+
+    result = eps * std + mu
+
+    print("MIN reparam")
+    print(torch.min(result))
+    print("MAX reparam")
+    print(torch.max(result))
+
     return eps * std + mu
