@@ -548,5 +548,4 @@ def training():
 
 
 if __name__ == '__main__':
-    with torch.autograd.set_detect_anomaly(True):
-        training()
+    training()
