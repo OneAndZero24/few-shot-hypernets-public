@@ -42,7 +42,7 @@ def kl_diag_gauss_with_standard_gauss(mean, logvar):
     print("MAX dkl")
     print(torch.max(result))
 
-    return
+    return result
 
 def reparameterize(mu, logvar):
     std = torch.exp(0.5 * (logvar -1))
