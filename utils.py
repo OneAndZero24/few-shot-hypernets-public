@@ -34,13 +34,13 @@ def sparsity(cl_data_file):
 
 def kl_diag_gauss_with_standard_gauss(mean, logvar):
     mean_flat = torch.cat([t.view(-1) for t in mean])
-    logvar_flat = torch.cat([t.view(-1) for t in logvar])-1
+    logvar_flat = torch.cat([t.view(-1) for t in logvar])
 
     var_flat = logvar_flat.exp() + _EPSILON # exp(log) ~~ 0
 
     return -0.5 * torch.sum(1 + logvar_flat - mean_flat.pow(2) - var_flat)
 
 def reparameterize(mu, logvar):
-    std = torch.exp(0.5 * (logvar -1)) + _EPSILON
+    std = torch.exp(0.5 * (logvar))
     eps = torch.randn_like(std)
     return eps * std + mu
