@@ -72,6 +72,7 @@ def parse_args(script):
 
 
     parser.add_argument("--maybe_terminate",action="store_true", help="If after 10 epochs model has 20% +- 5 acc then terminate")
+    parser.add_argument("--detect_anomaly",action="store_true", help="Detects NaNs/Infs in the gradient")
 
     if script == 'experiment1':
         # train args

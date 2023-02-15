@@ -551,5 +551,10 @@ def training():
 
 
 if __name__ == '__main__':
-    with torch.autograd.set_detect_anomaly(True):
+    params = parse_args('train')
+
+    if params.detect_anomaly:
+        with torch.autograd.set_detect_anomaly(True):
+            training()
+    else:
         training()
