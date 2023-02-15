@@ -173,6 +173,9 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
         model.train()
         metrics, hist_data = model.train_loop(epoch, base_loader, optimizer)  # model are called by reference, no need to return
 
+        if params.maybe_terminate and max_train_acc <= 25:
+            sys.exit()
+
         if epoch % 100 == 0:
             upload_images(neptune_run, hist_data, epoch)
 

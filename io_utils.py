@@ -70,6 +70,9 @@ def parse_args(script):
     parser.add_argument("--maml_adapt_classifier", action="store_true", help="Adapt only the classifier during second gradient calculation")
     parser.add_argument("--evaluate_model", action="store_true", help="Skip train phase and perform final test")
 
+
+    parser.add_argument("--maybe_terminate",action="store_true", help="If after 10 epochs model has 20% +- 5 acc then terminate")
+
     if script == 'experiment1':
         # train args
         parser.add_argument('--num_classes' , default=200, type=int, help='total number of classes in softmax, only used in baseline') #make it larger than the maximum label value in base class
