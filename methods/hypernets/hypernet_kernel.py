@@ -378,8 +378,8 @@ class HyperShot(HyperNetPOC):
             if isinstance(module, (BayesLinear)):
                 mu_weight.append(module.weight_mu.clone().data.cpu().numpy().flatten())
                 mu_bias.append(module.bias_mu.clone().data.cpu().numpy().flatten())
-                sigma_weight.append(torch.exp(0.5 * (module.weight_log_var-4)).clone().data.cpu().numpy().flatten())
-                sigma_bias.append(torch.exp(0.5 * (module.bias_log_var-4)).clone().data.cpu().numpy().flatten())
+                sigma_weight.append(torch.exp(0.5 * (module.weight_log_var-1)).clone().data.cpu().numpy().flatten())
+                sigma_bias.append(torch.exp(0.5 * (module.bias_log_var-1)).clone().data.cpu().numpy().flatten())
 
 
         mu_weight = np.concatenate(mu_weight)
