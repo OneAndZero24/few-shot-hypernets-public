@@ -2,6 +2,7 @@ import torch
 import numpy as np
 
 _EPSILON = 1e-7
+_LOG_EPSILON = 1e-10
 
 def one_hot(y, num_class):         
     return torch.zeros((len(y), num_class)).scatter_(1, y.unsqueeze(1), 1)
@@ -34,13 +35,23 @@ def sparsity(cl_data_file):
 
 def kl_diag_gauss_with_standard_gauss(mean, logvar):
     mean_flat = torch.cat([t.view(-1) for t in mean])
-    logvar_flat = torch.cat([t.view(-1) for t in logvar])
+    logvar_flat = torch.cat([t.view(-1) for t in logvar]) # torch.clip?
 
-    var_flat = logvar_flat.exp() + _EPSILON # exp(log) ~~ 0
+
+    # logvar clipping + nan_to_num
+    logvar_flat = torch.clip(logvar_flat, _LOG_EPSILON, 10)
+    logvar_flat = torch.nan_to_num(logvar_flat, nan=_LOG_EPSILON, neginf=_LOG_EPSILON)
+
+    # for exp(logvar) use only clipping
+    var_flat = torch.clip(logvar_flat.exp(), _EPSILON, 10)
 
     return -0.5 * torch.sum(1 + logvar_flat - mean_flat.pow(2) - var_flat)
 
 def reparameterize(mu, logvar):
+    # clippin during reparam
+    logvar = torch.clip(logvar, _LOG_EPSILON, 10)
+    logvar = torch.nan_to_num(logvar, nan=_LOG_EPSILON, neginf=_LOG_EPSILON)
+
     std = torch.exp(0.5 * (logvar))
     eps = torch.randn_like(std)
     return eps * std + mu
