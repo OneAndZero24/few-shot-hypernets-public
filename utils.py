@@ -39,8 +39,8 @@ def kl_diag_gauss_with_standard_gauss(mean, logvar):
 
 
     # logvar clipping + nan_to_num
-    logvar_flat = torch.clip(logvar_flat, _LOG_EPSILON, 10)
-    logvar_flat = torch.nan_to_num(logvar_flat, nan=_LOG_EPSILON, neginf=_LOG_EPSILON)
+    # logvar_flat = torch.clip(logvar_flat, _LOG_EPSILON, 10)
+    # logvar_flat = torch.nan_to_num(logvar_flat, nan=_LOG_EPSILON, neginf=_LOG_EPSILON)
 
     # for exp(logvar) use only clipping
     var_flat = torch.clip(logvar_flat.exp(), _EPSILON, 10)
@@ -49,8 +49,8 @@ def kl_diag_gauss_with_standard_gauss(mean, logvar):
 
 def reparameterize(mu, logvar):
     # clippin during reparam
-    logvar = torch.clip(logvar, _LOG_EPSILON, 10)
-    logvar = torch.nan_to_num(logvar, nan=_LOG_EPSILON, neginf=_LOG_EPSILON)
+    # logvar = torch.clip(logvar, _LOG_EPSILON, 10)
+    # logvar = torch.nan_to_num(logvar, nan=_LOG_EPSILON, neginf=_LOG_EPSILON)
 
     std = torch.exp(0.5 * (logvar))
     eps = torch.randn_like(std)

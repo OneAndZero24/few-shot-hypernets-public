@@ -326,11 +326,18 @@ class HyperNetPOC(MetaTemplate):
         if not self.hn_use_kld_scheduler:
             reduction = 1
 
+        total_grads = 0
+        inf_grads = 0
+        nan_grads = 0
+
         for i, (x, _) in enumerate(train_loader):
             taskset.append(x)
 
             # TODO 3: perhaps the idea of tasksets is redundant and it's better to update weights at every task
             if i % self.taskset_size == (self.taskset_size - 1) or i == (n_train - 1):
+
+                total_grads = total_grads + 1
+
                 crossentropy_loss_sum = torch.tensor(0.0).cuda()
                 kld_loss_sum = torch.tensor(0.0).cuda()
                 for tr in range(ts_repeats):
@@ -350,18 +357,28 @@ class HyperNetPOC(MetaTemplate):
                     else:
                         loss_sum = crossentropy_loss_sum
                     
-                    # clip / skip?
-                    optimizer.zero_grad()
-                    loss_sum.backward()
+                    print("MIN loss sum")
+                    print(torch.min(loss_sum))
+                    print("MAX loss sum")
+                    print(torch.max(loss_sum))
 
-                    if tr == 0:
-                        for k, p in get_param_dict(self).items():
-                            if(k.split('.')[0] != "target_net_architecture"): # Register also for target
-                                metrics[f"grad_norm/{k}"] = p.grad.abs().mean().item() if p.grad is not None else 0
-                            else:
-                                metrics[f"|classifier|grad_norm/{k}"] = p.grad.abs().mean().item() if p.grad is not None else 0
+                    if torch.isnan(loss_sum):
+                        nan_grads = nan_grads + 1
 
-                    optimizer.step()
+                    if torch.isinf(loss_sum):
+                        inf_grads = inf_grads + 1
+                    
+                    if not torch.isnan(loss_sum) and not torch.isinf(loss_sum):
+                        optimizer.zero_grad()
+                        loss_sum.backward()
+
+                        if tr == 0:
+                            for k, p in get_param_dict(self).items():
+                                if(k.split('.')[0] != "target_net_architecture"):
+                                    metrics[f"grad_norm/{k}"] = p.grad.abs().mean().item() if p.grad is not None else 0
+ 
+                        torch.nn.utils.clip_grad_norm_(self.parameters(), 1)
+                        optimizer.step()
 
                 losses.append(loss_sum.item())
                 kld_losses.append(kld_loss_sum.item())
@@ -381,6 +398,8 @@ class HyperNetPOC(MetaTemplate):
                 taskset = []
 
         metrics["loss/train"] = np.mean(losses)
+        metrics["inf_grads/percentage"] = float(inf_grads) / float(total_grads)
+        metrics["nan_grads/percentage"] = float(nan_grads) / float(total_grads)
         metrics["kld_loss/train"] = np.mean(kld_losses)
         metrics["kld_loss_scaled/train"] = np.mean(kld_losses) * reduction * self.hn_kld_const_scaler
         metrics["crossentropy_loss/train"] = np.mean(crossentropy_losses)
