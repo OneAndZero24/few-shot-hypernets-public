@@ -398,8 +398,8 @@ class HyperNetPOC(MetaTemplate):
                 taskset = []
 
         metrics["loss/train"] = np.mean(losses)
-        metrics["inf_grads/percentage"] = float(inf_grads) / float(total_grads)
-        metrics["nan_grads/percentage"] = float(nan_grads) / float(total_grads)
+        #metrics["inf_grads/percentage"] = 0 if total_grads == 0 else float(inf_grads) / float(total_grads)
+        #metrics["nan_grads/percentage"] = 0 if total_grads == 0 else float(nan_grads) / float(total_grads)
         metrics["kld_loss/train"] = np.mean(kld_losses)
         metrics["kld_loss_scaled/train"] = np.mean(kld_losses) * reduction * self.hn_kld_const_scaler
         metrics["crossentropy_loss/train"] = np.mean(crossentropy_losses)
