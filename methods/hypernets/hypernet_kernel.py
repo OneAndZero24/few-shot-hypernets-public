@@ -394,8 +394,8 @@ class HyperShot(HyperNetPOC):
                 "sigma_bias": sigma_bias
         }
 
-        print("RES:")
-        print(result)
+        # print("RES:")
+        # print(result)
         return result 
 
     # helper function to create dictionary of bayesian parameters in target network (used in experiments)

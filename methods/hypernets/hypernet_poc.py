@@ -357,10 +357,10 @@ class HyperNetPOC(MetaTemplate):
                     else:
                         loss_sum = crossentropy_loss_sum
                     
-                    print("MIN loss sum")
-                    print(torch.min(loss_sum))
-                    print("MAX loss sum")
-                    print(torch.max(loss_sum))
+                    # print("MIN loss sum")
+                    # print(torch.min(loss_sum))
+                    # print("MAX loss sum")
+                    # print(torch.max(loss_sum))
 
                     if torch.isnan(loss_sum):
                         nan_grads = nan_grads + 1
