@@ -84,15 +84,17 @@ def experiment(N):
     def cond(x, y):
         return (x is not None) and (y is not None)
 
-    X = torch.Tensor()
-    Y = torch.Tensor()
     x, y = take_next()
+    X = torch.Tensor([x])
+    Y = torch.Tensor([y])
     while cond(x, y):
+        x, y = take_next()
         Y = torch.cat((Y, y), 0)
         X = torch.cat((X, x), 0)
-        x, y = take_next()
-        while cond(x, y) and (len(reduce(np.intersect1d, (*Y, y))) > 0): 
-            x, y = take_next()
+
+        # here find yp =/= y in Y
+
+
 
     #sorry for ugly calculations, just making it work in a hurry
     ims = get_image_size(params) 
