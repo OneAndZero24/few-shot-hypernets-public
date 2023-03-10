@@ -84,18 +84,17 @@ def experiment(N):
         return (x is None) or (y is None)
 
     x, y = take_next()
+
     X = torch.Tensor()
     Y = torch.Tensor()
+
     Y = torch.cat((Y, y), 0)
     X = torch.cat((X, x), 0)
 
-    print(X.shape)
-    print(Y.shape)
-
-    # while not isAnyNone(x, y):
-    #     x, y = take_next()
-    #     Y = torch.cat((Y, y), 0)
-    #     X = torch.cat((X, x), 0)
+    while not isAnyNone(x, y):
+        x, y = take_next()
+        Y = torch.cat((Y, y), 0)
+        X = torch.cat((X, x), 0)
 
     #sorry for ugly calculations, just making it work in a hurry
     ims = get_image_size(params) 
