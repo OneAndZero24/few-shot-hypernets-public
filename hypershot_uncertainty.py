@@ -85,8 +85,8 @@ def experiment(N):
         return (x is None) or (y is None)
 
     x, y = take_next()
-    X = torch.Tensor([x])
-    Y = torch.Tensor([y])
+    X = torch.Tensor(x)
+    Y = torch.Tensor(y)
 
     print(X.shape)
     print(Y.shape)
