@@ -107,6 +107,7 @@ class BayesLinear(nn.Module):
 
         if (self.training and self.bayesian) or (self.bayesian and self.bayesian_test):
 
+            print("Getting new weights from distribution..")
             weight = reparameterize(self.weight_mu, self.weight_log_var)
             bias = reparameterize(self.bias_mu, self.bias_log_var)
 
