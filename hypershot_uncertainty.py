@@ -83,13 +83,12 @@ def experiment(N):
     def isAnyNone(x, y):
         return (x is None) or (y is None)
 
+
+ 
+
     x, y = take_next()
-
-    X = torch.Tensor()
-    Y = torch.Tensor()
-
-    Y = torch.cat((Y, y), 0)
-    X = torch.cat((X, x), 0)
+    X = torch.Tensor([x])
+    Y = torch.Tensor([y])
 
     while not isAnyNone(x, y):
         x, y = take_next()
