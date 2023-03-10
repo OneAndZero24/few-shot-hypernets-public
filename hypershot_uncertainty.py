@@ -84,8 +84,10 @@ def experiment(N):
         return (x is None) or (y is None)
 
     x, y = take_next()
-    X = torch.Tensor(x)
-    Y = torch.Tensor(y)
+    X = torch.Tensor()
+    Y = torch.Tensor()
+    Y = torch.cat((Y, y), 0)
+    X = torch.cat((X, x), 0)
 
     print(X.shape)
     print(Y.shape)
@@ -113,6 +115,9 @@ def experiment(N):
 
     model.n_query = X[0].size(1) - model.n_support #found that n_query gets changed
     model.eval()
+
+    print(S.shape)
+    print(Q.shape)
 
     # i = 0
     # for s in S:
