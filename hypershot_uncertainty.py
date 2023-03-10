@@ -81,56 +81,56 @@ def experiment(N):
     def take_next():
         return next(dataset, (None, None))
 
-    def cond(x, y):
-        return (x is not None) and (y is not None)
+    def isAnyNone(x, y):
+        return (x is None) or (y is None)
 
     x, y = take_next()
     X = torch.Tensor([x])
     Y = torch.Tensor([y])
-    while cond(x, y):
-        x, y = take_next()
-        Y = torch.cat((Y, y), 0)
-        X = torch.cat((X, x), 0)
 
-        # here find yp =/= y in Y
+    print(X.shape)
+    print(Y.shape)
 
+    # while not isAnyNone(x, y):
+    #     x, y = take_next()
+    #     Y = torch.cat((Y, y), 0)
+    #     X = torch.cat((X, x), 0)
 
+    # #sorry for ugly calculations, just making it work in a hurry
+    # ims = get_image_size(params) 
+    # bb = model.n_way*(model.n_support + model.n_query)
+    # bs = bb*ims*ims
+    # bn = int(torch.numel(X)/(bs*(X.size()[2])))
+    # B = torch.reshape(X, (bn, model.n_way, model.n_support + model.n_query, *X.size()[2:]))
 
-    #sorry for ugly calculations, just making it work in a hurry
-    ims = get_image_size(params) 
-    bb = model.n_way*(model.n_support + model.n_query)
-    bs = bb*ims*ims
-    bn = int(torch.numel(X)/(bs*(X.size()[2])))
-    B = torch.reshape(X, (bn, model.n_way, model.n_support + model.n_query, *X.size()[2:]))
+    # S = torch.Tensor().cuda()
+    # Q = torch.Tensor().cuda()
+    # for b in B:
+    #     s, q = model.parse_feature(b, is_feature=False)
+    #     s = torch.reshape(s, (1, *s.size()))
+    #     q = torch.reshape(q, (1, *q.size()))
+    #     S = torch.cat((S, s), 0)
+    #     Q = torch.cat((Q, q), 0)
 
-    S = torch.Tensor().cuda()
-    Q = torch.Tensor().cuda()
-    for b in B:
-        s, q = model.parse_feature(b, is_feature=False)
-        s = torch.reshape(s, (1, *s.size()))
-        q = torch.reshape(q, (1, *q.size()))
-        S = torch.cat((S, s), 0)
-        Q = torch.cat((Q, q), 0)
+    # model.n_query = X[0].size(1) - model.n_support #found that n_query gets changed
+    # model.eval()
 
-    model.n_query = X[0].size(1) - model.n_support #found that n_query gets changed
-    model.eval()
-
-    i = 0
-    for s in S:
-        q = Q[i]
-        q = q.reshape(-1, q.shape[-1])
-        classifier, _ = model.generate_target_net(s)
-        rel = model.build_relations_features(support_feature=s, feature_to_classify=q)
-        r = [[] for _ in range(model.n_way)]
-        for _ in range(N):
-            print('---')
-            o = classifier(rel)
-            print(o.shape)
-            sample = torch.nn.functional.softmax(classifier(rel), dim=1)[0].clone().data.cpu().numpy()
-            for j in range(model.n_way):
-                r[j].append(sample[j])
-        upload_hist(neptune_run, model.n_way, r, i)
-        i += 1
+    # i = 0
+    # for s in S:
+    #     q = Q[i]
+    #     q = q.reshape(-1, q.shape[-1])
+    #     classifier, _ = model.generate_target_net(s)
+    #     rel = model.build_relations_features(support_feature=s, feature_to_classify=q)
+    #     r = [[] for _ in range(model.n_way)]
+    #     for _ in range(N):
+    #         print('---')
+    #         o = classifier(rel)
+    #         print(o.shape)
+    #         sample = torch.nn.functional.softmax(classifier(rel), dim=1)[0].clone().data.cpu().numpy()
+    #         for j in range(model.n_way):
+    #             r[j].append(sample[j])
+    #     upload_hist(neptune_run, model.n_way, r, i)
+    #     i += 1
 
 if __name__ == '__main__':
     experiment(30)
