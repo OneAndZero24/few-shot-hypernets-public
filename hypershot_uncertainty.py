@@ -244,8 +244,8 @@ def experiment(N):
     colors = {'Query set': 'blue', 'Support set': 'orange', 'OOD': 'green'}
 
     df.head()
-    fig = plt.figure(figsize=(15,10))
-    sns.violinplot(data=df, x='Class', y='Activation', hue='Type', scale="width", orient="v")
+    fig = plt.figure(figsize=(10,15))
+    sns.violinplot(data=df, x='Activation', y='Class', hue='Type', scale="width", orient="h")
     plt.savefig(savepath)
     plt.close(fig)
 
