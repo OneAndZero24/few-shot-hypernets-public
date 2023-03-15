@@ -8,11 +8,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import torch
-from neptune.new.types import File
 
 import configs
 from data.datamgr import SetDataManager
-from io_utils import model_dict, parse_args, setup_neptune
+from io_utils import model_dict, parse_args
 from methods.hypernets.hypernet_kernel import HyperShot
 
 # NOTE: This uncertainty experiment was created on the master branch.
@@ -71,7 +70,6 @@ def experiment(N):
     params = parse_args('train') # We need to parse the same parameters as during training
     print(f"Setting checkpoint_dir to {os.environ.get('BASEPATH')}")
     params.checkpoint_dir = os.environ.get('BASEPATH')
-    neptune_run = setup_neptune(params)
 
     print(f"Loading model from {os.environ.get('MODELPATH')}")
     model_path = os.environ.get('MODELPATH')
@@ -243,10 +241,12 @@ def experiment(N):
         df3['Type'] = "Element out of distribution"
         df = df.append(pd.concat([df1, df2, df3]))
 
+    savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
+
     df.head()
     fig = plt.figure()
     sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
-    neptune_run[f"Plot"].upload(File.as_image(fig))
+    plt.savefig(savepath)
     plt.close(fig)
 
 if __name__ == '__main__':
