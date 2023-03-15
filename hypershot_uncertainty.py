@@ -245,7 +245,7 @@ def experiment(N):
 
     df.head()
     fig = plt.figure()
-    sns.b(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    sns.violinplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
     plt.savefig(savepath)
     plt.close(fig)
 
