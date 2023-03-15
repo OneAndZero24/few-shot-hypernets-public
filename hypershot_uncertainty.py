@@ -243,7 +243,7 @@ def experiment(N):
 
     df.head()
     fig = plt.figure(figsize=(15,10))
-    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    sns.histogram(data=df, x='Class', y='Activation', hue='Type')
     plt.savefig(savepath)
     plt.close(fig)
 
