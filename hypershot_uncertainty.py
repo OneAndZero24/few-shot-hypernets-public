@@ -230,6 +230,8 @@ def experiment(N):
         plt.hist([R1[i], R2[i], R3[i]], bins)
         # plt.hist(R2[i], bins, alpha=0.33, color='green', label='S1/S1')
         # plt.hist(R3[i], bins, alpha=0.33, color='blue', label='S1/Q2')
+        fond = plt.gca()
+        fond.set_facecolor('whitesmoke')
         plt.gca().legend(('Query set', 'Support set', 'OOD'))
         plt.legend(loc='upper right')
         savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
