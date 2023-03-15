@@ -245,9 +245,9 @@ def experiment(N):
 
     df.head()
     fig = plt.figure()
-    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    sns.b(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
     plt.savefig(savepath)
     plt.close(fig)
 
 if __name__ == '__main__':
-    experiment(1000)
+    experiment(10000)
