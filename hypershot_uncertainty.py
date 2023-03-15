@@ -226,14 +226,13 @@ def experiment(N):
 
     for i in range(model.n_way):
         bins = np.linspace(0, 1, 10)
-        fig = plt.figure()
-        plt.hist([R1[i], R2[i], R3[i]], bins)
+        fig = plt.figure(figsize=(15,10))
+        plt.hist([R1[i], R2[i], R3[i]], bins, label=['Query', 'Support', 'OOD'])
         # plt.hist(R2[i], bins, alpha=0.33, color='green', label='S1/S1')
         # plt.hist(R3[i], bins, alpha=0.33, color='blue', label='S1/Q2')
+        plt.legend(loc='upper right')
         fond = plt.gca()
         fond.set_facecolor('whitesmoke')
-        plt.gca().legend(('Query set', 'Support set', 'OOD'))
-        plt.legend(loc='upper right')
         savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
         plt.savefig(savepath)
         plt.close(fig)
