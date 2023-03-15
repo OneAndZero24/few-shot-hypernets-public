@@ -6,11 +6,10 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
-from neptune.new.types import File
 
 import configs
 from data.datamgr import SetDataManager
-from io_utils import model_dict, parse_args, setup_neptune
+from io_utils import model_dict, parse_args
 from methods.hypernets.hypernet_kernel import HyperShot
 
 # NOTE: This uncertainty experiment was created on the master branch.
@@ -69,7 +68,6 @@ def experiment(N):
     params = parse_args('train') # We need to parse the same parameters as during training
     print(f"Setting checkpoint_dir to {os.environ.get('BASEPATH')}")
     params.checkpoint_dir = os.environ.get('BASEPATH')
-    neptune_run = setup_neptune(params)
 
     print(f"Loading model from {os.environ.get('MODELPATH')}")
     model_path = os.environ.get('MODELPATH')
@@ -233,8 +231,10 @@ def experiment(N):
         plt.hist(R2[i], bins, alpha=0.33, color='green', label='S1/S1')
         plt.hist(R3[i], bins, alpha=0.33, color='blue', label='S1/Q2')
         plt.legend(loc='upper right')
-        neptune_run[f"Class {i}"].upload(File.as_image(fig))
+        savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
+        plt.savefig(savepath)
         plt.close(fig)
 
+
 if __name__ == '__main__':
-    experiment(250)
+    experiment(400)
