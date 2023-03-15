@@ -239,4 +239,4 @@ def experiment(N):
         plt.close(fig)
 
 if __name__ == '__main__':
-    experiment(400)
+    experiment(100)
