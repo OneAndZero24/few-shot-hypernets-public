@@ -245,7 +245,7 @@ def experiment(N):
 
     df.head()
     fig = plt.figure(figsize=(15,10))
-    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False, palette=colors)
+    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
     plt.savefig(savepath)
     plt.close(fig)
 
