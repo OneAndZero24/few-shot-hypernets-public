@@ -4,14 +4,13 @@ from functools import reduce
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import torch
+from neptune.new.types import File
 
 import configs
 from data.datamgr import SetDataManager
-from io_utils import model_dict, parse_args
+from io_utils import model_dict, parse_args, setup_neptune
 from methods.hypernets.hypernet_kernel import HyperShot
 
 # NOTE: This uncertainty experiment was created on the master branch.
@@ -70,6 +69,7 @@ def experiment(N):
     params = parse_args('train') # We need to parse the same parameters as during training
     print(f"Setting checkpoint_dir to {os.environ.get('BASEPATH')}")
     params.checkpoint_dir = os.environ.get('BASEPATH')
+    neptune_run = setup_neptune(params)
 
     print(f"Loading model from {os.environ.get('MODELPATH')}")
     model_path = os.environ.get('MODELPATH')
@@ -217,36 +217,24 @@ def experiment(N):
     rel = model.build_relations_features(support_feature=s1, feature_to_classify=q2)
     for _ in range(N):
         o = classifier(rel)[qy2_index].flatten()
+        print(o.shape)
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
+        print(sample.shape)
         for i in range(model.n_way):
             R3[i].append(sample[i])
 
     # finally we want to pass q2 to build_relational_features as feature_to_classify=q2
     # and focus on probabilities for qy2_index (those are probabilities of a class that does not exist in support set s1) HERE IS A CHANGE sample[qy2_index, :]
 
-    df = pd.DataFrame(columns=['Class', 'Type', 'Activation'])
     for i in range(model.n_way):
-        df1 = pd.DataFrame(R1[i], columns=['Activation'])
-        df1['Class'] = i+1
-        df1['Type'] = "Query set"
-
-        df2 = pd.DataFrame(R2[i], columns=['Activation'])
-        df2['Class'] = i+1
-        df2['Type'] = "Support set"
-
-        df3 = pd.DataFrame(R3[i], columns=['Activation'])
-        df3['Class'] = i+1
-        df3['Type'] = "OOD"
-        df = df.append(pd.concat([df1, df2, df3]))
-
-
-    for i in range(model.n_way):
-        savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
-        df.head()
-        fig = plt.figure(figsize=(15,10))
-        sns.histplot(data=df[df['Class'] == i+1].drop(['Class'], axis=1), x='Activation', hue='Type', stat="count")
-        plt.savefig(savepath)
+        bins = np.linspace(0, 1, 50)
+        fig = plt.figure()
+        plt.hist(R1[i], bins, alpha=0.33, color='red', label='S1/Q1')
+        plt.hist(R2[i], bins, alpha=0.33, color='green', label='S1/S1')
+        plt.hist(R3[i], bins, alpha=0.33, color='blue', label='S1/Q2')
+        plt.legend(loc='upper right')
+        neptune_run[f"Class {i}"].upload(File.as_image(fig))
         plt.close(fig)
 
 if __name__ == '__main__':
-    experiment(500)
+    experiment(250)
