@@ -241,9 +241,11 @@ def experiment(N):
 
     savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
 
+    colors = {'Query set': 'blue', 'Support set': 'orange', 'OOD': 'green'}
+
     df.head()
     fig = plt.figure(figsize=(15,10))
-    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False, palette=colors)
     plt.savefig(savepath)
     plt.close(fig)
 
