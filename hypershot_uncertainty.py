@@ -235,7 +235,7 @@ def experiment(N):
         fond = plt.gca()
         fond.set_facecolor('whitesmoke')
         savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
-        plt.savefig(savepath)
+        plt.savefig(savepath, dpi=3000)
         plt.close(fig)
 
 if __name__ == '__main__':
