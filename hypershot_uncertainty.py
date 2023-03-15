@@ -244,7 +244,7 @@ def experiment(N):
         savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
         df.head()
         fig = plt.figure(figsize=(15,10))
-        sns.histplot(data=df[df['Class'] == i+1], x='Activation', hue='Type', stat="count")
+        sns.histplot(data=df[df['Class'] == i+1], y='Activation', hue='Type', stat="count")
         plt.savefig(savepath)
         plt.close(fig)
 
