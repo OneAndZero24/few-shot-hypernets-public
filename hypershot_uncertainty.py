@@ -242,10 +242,10 @@ def experiment(N):
     savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
 
     df.head()
-    fig = plt.figure()
-    sns.violinplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    fig = plt.figure(figsize=(15,10))
+    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
     plt.savefig(savepath)
     plt.close(fig)
 
 if __name__ == '__main__':
-    experiment(10000)
+    experiment(500)
