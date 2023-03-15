@@ -239,13 +239,14 @@ def experiment(N):
         df3['Type'] = "OOD"
         df = df.append(pd.concat([df1, df2, df3]))
 
-    savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
 
-    df.head()
-    fig = plt.figure(figsize=(15,10))
-    sns.histplot(data=df, x='Activation', hue='Type', stat="count")
-    plt.savefig(savepath)
-    plt.close(fig)
+    for i in range(model.n_way):
+        savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
+        df.head()
+        fig = plt.figure(figsize=(15,10))
+        sns.histplot(data=df[df['Class'] == i+1], x='Activation', hue='Type', stat="count")
+        plt.savefig(savepath)
+        plt.close(fig)
 
 if __name__ == '__main__':
     experiment(500)
