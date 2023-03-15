@@ -245,7 +245,7 @@ def experiment(N):
 
     df.head()
     fig = plt.figure(figsize=(15,10))
-    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    sns.violinplot(data=df, x='Class', y='Activation', hue='Type', scale="width")
     plt.savefig(savepath)
     plt.close(fig)
 
