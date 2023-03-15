@@ -243,7 +243,7 @@ def experiment(N):
 
     df.head()
     fig = plt.figure(figsize=(15,10))
-    sns.histogram(data=df, x='Class', y='Activation', hue='Type')
+    sns.histplot(data=df, x='Class', y='Activation', hue='Type')
     plt.savefig(savepath)
     plt.close(fig)
 
