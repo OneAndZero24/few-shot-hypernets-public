@@ -253,6 +253,9 @@ def experiment(N):
 
 if __name__ == '__main__':
     experiment(50000)
+    experiment(50001)
+    experiment(50002)
+    experiment(50003)
     experiment(1000)
     experiment(25000)
     experiment(250)
