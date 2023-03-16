@@ -230,15 +230,15 @@ def experiment(N):
     for i in range(model.n_way):
         df1 = pd.DataFrame(R1[i], columns=['Activation'])
         df1['Class'] = i+1
-        df1['Type'] = "Element from query set"
+        df1['Type'] = "Query"
 
         df2 = pd.DataFrame(R2[i], columns=['Activation'])
         df2['Class'] = i+1
-        df2['Type'] = "Element from support set"
+        df2['Type'] = "Support"
 
         df3 = pd.DataFrame(R3[i], columns=['Activation'])
         df3['Class'] = i+1
-        df3['Type'] = "Element out of distribution"
+        df3['Type'] = "OOD"
         df = df.append(pd.concat([df1, df2, df3]))
 
     savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
