@@ -207,7 +207,7 @@ def experiment(N):
         for i in range(model.n_way):
             dynamic_val = sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=1)) * (1 if sample[i] < 0.5 else -1)
             dynamic_val = sample[i] if dynamic_val >= 1 or dynamic_val <= 0 else dynamic_val
-            R1[i].append(dynamic_val)
+            R2[i].append(dynamic_val)
 
 
     # do a forward pass for s1 tensor (buld_relation_features for support_feature=s1, feature_to_classify=s1)
