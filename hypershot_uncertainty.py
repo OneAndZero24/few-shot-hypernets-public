@@ -4,7 +4,9 @@ from functools import reduce
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import torch
 
 import configs
@@ -224,19 +226,28 @@ def experiment(N):
     # finally we want to pass q2 to build_relational_features as feature_to_classify=q2
     # and focus on probabilities for qy2_index (those are probabilities of a class that does not exist in support set s1) HERE IS A CHANGE sample[qy2_index, :]
 
-    plt.style.use('seaborn-dark-palette')
+    df = pd.DataFrame(columns=['Class', 'Type', 'Activation'])
     for i in range(model.n_way):
-        bins = np.linspace(0, 1, 10)
-        fig = plt.figure()
-        plt.hist([R1[i], R2[i], R3[i]], bins, label=['Query', 'Support', 'OOD'], alpha=0.33)
-        # plt.hist(R2[i], bins, alpha=0.33, color='green', label='S1/S1')
-        # plt.hist(R3[i], bins, alpha=0.33, color='blue', label='S1/Q2')
-        plt.legend(loc='upper right')
-        fond = plt.gca()
-        fond.set_facecolor('whitesmoke')
-        savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_class{i+1}.png')
-        plt.savefig(savepath, dpi=3000)
-        plt.close(fig)
+        df1 = pd.DataFrame(R1[i], columns=['Activation'])
+        df1['Class'] = i+1
+        df1['Type'] = "Element from query set"
+
+        df2 = pd.DataFrame(R2[i], columns=['Activation'])
+        df2['Class'] = i+1
+        df2['Type'] = "Element from support set"
+
+        df3 = pd.DataFrame(R3[i], columns=['Activation'])
+        df3['Class'] = i+1
+        df3['Type'] = "Element out of distribution"
+        df = df.append(pd.concat([df1, df2, df3]))
+
+    savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
+
+    df.head()
+    fig = plt.figure()
+    sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    plt.savefig(savepath)
+    plt.close(fig)
 
 if __name__ == '__main__':
-    experiment(100)
+    experiment(1000)
