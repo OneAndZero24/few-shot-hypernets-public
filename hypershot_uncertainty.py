@@ -241,6 +241,7 @@ def experiment(N):
 
     savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
 
+    sns.set_theme()
     df.head()
     fig = plt.figure()
     sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
