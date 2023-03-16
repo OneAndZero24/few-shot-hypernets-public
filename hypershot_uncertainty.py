@@ -252,19 +252,7 @@ def experiment(N):
     plt.close(fig)
 
 if __name__ == '__main__':
-    experiment(50000)
-    experiment(50001)
-    experiment(50002)
-    experiment(50003)
-    experiment(1000)
-    experiment(25000)
-    experiment(250)
-    experiment(500)
-    experiment(10000)
-    experiment(10001)
-    experiment(10002)
-    experiment(10003)
-    experiment(10004)
-    experiment(10005)
-    experiment(5000)
-    experiment(400)
+
+    for N in [100,200,300,400,500,1000,5000,10000,25000]:
+        for i in [0,1,2,3,4,5,6,7,8,9]:
+            experiment(N+i)
