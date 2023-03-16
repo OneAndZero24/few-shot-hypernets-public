@@ -14,7 +14,7 @@ from data.datamgr import SetDataManager
 from io_utils import model_dict, parse_args
 from methods.hypernets.hypernet_kernel import HyperShot
 
-EPS = 0.02 # Value to improve visibility on the boxplot since variance on seen data is so low.
+EPS = 0.01 # Value to improve visibility on the boxplot since variance on seen data is so low.
 
 # NOTE: This uncertainty experiment was created on the master branch.
 # But still we have to use it on other branches with different implementations of model architectures (and different set of parameters).
