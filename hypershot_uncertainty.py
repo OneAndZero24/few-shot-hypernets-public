@@ -241,7 +241,7 @@ def experiment(N):
         df3['Type'] = "OOD"
         df = df.append(pd.concat([df1, df2, df3]))
 
-    savepath = os.path.join(os.environ.get('SAVEPATH'),'result.png')
+    savepath = os.path.join(os.environ.get('SAVEPATH'),f'result_{N}.png')
 
     sns.set_theme()
     df.head()
@@ -253,3 +253,8 @@ def experiment(N):
 
 if __name__ == '__main__':
     experiment(1000)
+    experiment(250)
+    experiment(500)
+    experiment(10000)
+    experiment(5000)
+    experiment(400)
