@@ -181,7 +181,7 @@ def experiment(N):
         o = classifier(rel)[0].flatten()
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
         for i in range(model.n_way):
-            R1[i].append(sample[i] + EPS*np.random.normal(loc=0,scale=0.5) * (1 if sample[i] < 0.5 else -1))
+            R1[i].append(sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=0.5)) * (1 if sample[i] < 0.5 else -1))
 
 
     # in this loop we do a forward pass (above)
@@ -203,7 +203,7 @@ def experiment(N):
         o = classifier(rel)[0].flatten()
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
         for i in range(model.n_way):
-            R2[i].append(sample[i] + EPS*np.random.normal(loc=0,scale=0.5) * (1 if sample[i] < 0.5 else -1))
+            R2[i].append(sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=0.5)) * (1 if sample[i] < 0.5 else -1))
 
 
     # do a forward pass for s1 tensor (buld_relation_features for support_feature=s1, feature_to_classify=s1)
