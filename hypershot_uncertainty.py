@@ -14,7 +14,7 @@ from data.datamgr import SetDataManager
 from io_utils import model_dict, parse_args
 from methods.hypernets.hypernet_kernel import HyperShot
 
-EPS = 0.018 # Value to improve visibility on the boxplot since variance on seen data is so low.
+EPS = 0.02 # Value to improve visibility on the boxplot since variance on seen data is so low.
 
 # NOTE: This uncertainty experiment was created on the master branch.
 # But still we have to use it on other branches with different implementations of model architectures (and different set of parameters).
@@ -181,7 +181,9 @@ def experiment(N):
         o = classifier(rel)[0].flatten()
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
         for i in range(model.n_way):
-            R1[i].append(sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=1)) * (1 if sample[i] < 0.5 else -1))
+            dynamic_val = sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=1)) * (1 if sample[i] < 0.5 else -1)
+            dynamic_val = sample[i] if dynamic_val >= 1 or dynamic_val <= 0 else dynamic_val
+            R1[i].append(dynamic_val)
 
 
     # in this loop we do a forward pass (above)
@@ -203,7 +205,9 @@ def experiment(N):
         o = classifier(rel)[0].flatten()
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
         for i in range(model.n_way):
-            R2[i].append(sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=1)) * (1 if sample[i] < 0.5 else -1))
+            dynamic_val = sample[i] + EPS*np.abs(np.random.normal(loc=0,scale=1)) * (1 if sample[i] < 0.5 else -1)
+            dynamic_val = sample[i] if dynamic_val >= 1 or dynamic_val <= 0 else dynamic_val
+            R1[i].append(dynamic_val)
 
 
     # do a forward pass for s1 tensor (buld_relation_features for support_feature=s1, feature_to_classify=s1)
