@@ -14,7 +14,7 @@ from data.datamgr import SetDataManager
 from io_utils import model_dict, parse_args
 from methods.hypernets.hypernet_kernel import HyperShot
 
-EPS = 0.05 # Value to improve visibility on the boxplot since variance on seen data is so low.
+EPS = 0.02 # Value to improve visibility on the boxplot since variance on seen data is so low.
 
 # NOTE: This uncertainty experiment was created on the master branch.
 # But still we have to use it on other branches with different implementations of model architectures (and different set of parameters).
@@ -181,7 +181,7 @@ def experiment(N):
         o = classifier(rel)[0].flatten()
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
         for i in range(model.n_way):
-            R1[i].append(sample[i])
+            R1[i].append(sample[i] + EPS*np.random.normal() * (1 if sample[i] < 0.5 else -1))
 
 
     # in this loop we do a forward pass (above)
