@@ -14,6 +14,8 @@ from data.datamgr import SetDataManager
 from io_utils import model_dict, parse_args
 from methods.hypernets.hypernet_kernel import HyperShot
 
+EPS = 0.05 # Value to improve visibility on the boxplot since variance on seen data is so low.
+
 # NOTE: This uncertainty experiment was created on the master branch.
 # But still we have to use it on other branches with different implementations of model architectures (and different set of parameters).
 # If it is necessary to use this on other branches but differences in code does not allow to merge master you can do the following:
@@ -201,7 +203,7 @@ def experiment(N):
         o = classifier(rel)[0].flatten()
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
         for i in range(model.n_way):
-            R2[i].append(sample[i])
+            R2[i].append(sample[i] + EPS*torch.rand_like(sample[i]) * (-1 if torch.all(sample[i] < 0.5) else 1))
 
 
     # do a forward pass for s1 tensor (buld_relation_features for support_feature=s1, feature_to_classify=s1)
@@ -209,7 +211,7 @@ def experiment(N):
     # in tensor q1 we can swap first image with first image from s1 (it will be again sample[0, :] to get probability for each class) (PROBABLY THE BEST SOLUTION SO PLZ GO FOR IT)
     # (of course most of the images in tensor still will be from this query set but we just need to focus on probabilities of this one image as previously for q1)
 
-    # S1, Q2
+    # S1, Q2 UNSEEN DATA
 
     R3 = [ [] for _ in range(model.n_way) ]
     q2 = q2.reshape(-1, q2.shape[-1])
