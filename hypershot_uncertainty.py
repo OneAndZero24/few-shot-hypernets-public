@@ -217,9 +217,7 @@ def experiment(N):
     rel = model.build_relations_features(support_feature=s1, feature_to_classify=q2)
     for _ in range(N):
         o = classifier(rel)[qy2_index].flatten()
-        print(o.shape)
         sample = torch.nn.functional.softmax(o).clone().data.cpu().numpy()
-        print(sample.shape)
         for i in range(model.n_way):
             R3[i].append(sample[i])
 
@@ -246,6 +244,7 @@ def experiment(N):
     df.head()
     fig = plt.figure()
     sns.boxplot(data=df, x='Class', y='Activation', hue='Type', showfliers = False)
+    print(f"Saving to a file {savepath}")
     plt.savefig(savepath)
     plt.close(fig)
 
